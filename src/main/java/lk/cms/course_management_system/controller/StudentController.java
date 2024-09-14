@@ -27,4 +27,30 @@ public class StudentController {
     public List<StudentDto> getAllStudents() {
         return studentService.getAllStudent();
     }
+
+    @GetMapping("/{Studentid}")
+    public ResponseEntity<Object> getStudentById(@PathVariable Integer Studentid) {
+        StudentDto studentDto = studentService.getStudentById(Studentid);
+        if(studentDto == null){
+            return new ResponseEntity<>("No student found", HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(studentDto, HttpStatus.OK);
+    }
+
+    @PutMapping("/student_with_course/{studentId}")
+    public ResponseEntity<Object> updateStudentWithCourse(@PathVariable Integer studentId, @RequestBody StudentDto studentDto){
+        StudentDto update = studentService.updateStudentWithCourse(studentId,studentDto);
+        if(update == null){
+            return new ResponseEntity<>("No student found", HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(update, HttpStatus.OK);
+    }
+
+    @DeleteMapping("/{studentId}")
+    public ResponseEntity<String> deleteStudent(@PathVariable Integer studentId){
+        if(studentService.deleteStudent(studentId)){
+            return new ResponseEntity<>("Deleted", HttpStatus.OK);
+        }
+        return new ResponseEntity<>("No data found !", HttpStatus.NOT_FOUND);
+    }
 }

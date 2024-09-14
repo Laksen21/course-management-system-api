@@ -12,7 +12,7 @@ public class CourseService {
     @Autowired
     private CourseRepository courseRepository;
 
-    public CourseDto saveStudent(CourseDto courseDto) {
+    public CourseDto saveCourse(CourseDto courseDto) {
         Course save = courseRepository.save(new Course(courseDto.getId(),courseDto.getTitle(), courseDto.getDescription()));
         return new CourseDto(save.getId(), save.getTitle(), save.getDescription());
     }

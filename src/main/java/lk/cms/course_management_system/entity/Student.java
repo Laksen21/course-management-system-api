@@ -23,7 +23,7 @@ public class Student {
     private String address;
     private String appPassword;
 
-    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
     @JoinTable(name = "student_course",
             joinColumns = {
                     @JoinColumn(name = "student_id", referencedColumnName = "id")

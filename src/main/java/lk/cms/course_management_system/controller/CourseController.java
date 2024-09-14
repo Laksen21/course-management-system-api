@@ -16,7 +16,7 @@ public class CourseController {
 
     @PostMapping
     public ResponseEntity<CourseDto> saveStudent(@RequestBody CourseDto courseDto){
-            CourseDto course = courseService.saveStudent(courseDto);
+            CourseDto course = courseService.saveCourse(courseDto);
             return new ResponseEntity<>(course, HttpStatus.OK);
     }
 
