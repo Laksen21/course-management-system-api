@@ -20,7 +20,7 @@ public class UserService {
 
     BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
-    public RegisterResponseDto register(UserDto userDto) {
+    public RegisterResponseDto addUser(UserDto userDto) {
         String encodedPassword = passwordEncoder.encode(userDto.getPassword()); //Bcrypt
         User save = userRepository.save(new User(userDto.getUsername(), encodedPassword));
         return new RegisterResponseDto(save.getUsername(), "User Registered");
@@ -34,4 +34,21 @@ public class UserService {
         }
         return new LoginResponseDto(userByUsername.getUsername(), "Login Failed !", null);
     }
+
+    public UserDto updateUser(Integer userId, UserDto userDto) {
+        if (userRepository.existsById(userId)) {
+            User update = userRepository.save(new User(userId, userDto.getUsername(), userDto.getPassword()));
+            return new UserDto(update.getId(), update.getUsername());
+        }
+        return null;
+    }
+
+    public boolean deleteUser(Integer userId) {
+        if(userRepository.existsById(userId)){
+            userRepository.deleteById(userId);
+            return true;
+        }
+        return false;
+    }
+
 }

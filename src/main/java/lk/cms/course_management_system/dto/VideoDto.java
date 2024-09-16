@@ -1,5 +1,6 @@
 package lk.cms.course_management_system.dto;
 
+import lk.cms.course_management_system.entity.Course;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -7,14 +8,12 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserDto {
+public class VideoDto {
 
     private Integer id;
-    private String username;
-    private String password;
+    private String name;
+    private String videoFilePath;
+    private String thumbnailFilePath;
 
-    public UserDto(Integer id, String username) {
-        this.id = id;
-        this.username = username;
-    }
+
 }

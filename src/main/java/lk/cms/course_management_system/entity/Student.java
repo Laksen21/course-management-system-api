@@ -32,7 +32,7 @@ public class Student {
                     @JoinColumn(name = "course_id", referencedColumnName = "id")
             }
     )
-    @JsonManagedReference
+
     private List<Course> courses;
 
     public Student(String name, String email, String tel_no, String address, String appPassword, List<Course> courses) {

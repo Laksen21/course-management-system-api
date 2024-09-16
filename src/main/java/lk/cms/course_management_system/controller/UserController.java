@@ -13,19 +13,12 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/user")
 public class UserController {
+
     @Autowired
     private UserService userService;
+
     @Autowired
     JwtAuthenticator jwtAuthenticator;
-
-    @PostMapping("/register")
-    public ResponseEntity<RegisterResponseDto> register(@RequestBody UserDto userDto, @RequestHeader(name = "Authorization") String authHeader) {
-        if (jwtAuthenticator.validateJwtToken(authHeader)){
-            RegisterResponseDto register = userService.register(userDto);
-            return new ResponseEntity<>(register, HttpStatus.CREATED);
-        }
-        return new ResponseEntity<>(null, HttpStatus.FORBIDDEN);
-    }
 
     @PostMapping("/login")
     public ResponseEntity<LoginResponseDto> login(@RequestBody UserDto userDto) {
@@ -34,5 +27,37 @@ public class UserController {
             return new ResponseEntity<>(login, HttpStatus.UNAUTHORIZED);
         }
         return new ResponseEntity<>(login, HttpStatus.OK);
+    }
+
+    @PostMapping("/add-user")
+    public ResponseEntity<RegisterResponseDto> addUser(@RequestBody UserDto userDto, @RequestHeader(name = "Authorization") String authHeader) {
+        if (jwtAuthenticator.validateJwtToken(authHeader)) {
+            RegisterResponseDto register = userService.addUser(userDto);
+            return new ResponseEntity<>(register, HttpStatus.CREATED);
+        }
+        return new ResponseEntity<>(null, HttpStatus.FORBIDDEN);
+    }
+
+    @PutMapping("/{userId}")
+    public ResponseEntity<Object> updateUser(@PathVariable Integer userId, @RequestBody UserDto userDto, @RequestHeader(name = "Authorization") String authHeader){
+        if (jwtAuthenticator.validateJwtToken(authHeader)) {
+            UserDto update = userService.updateUser(userId,userDto);
+            if(update == null){
+                return new ResponseEntity<>("No user found", HttpStatus.NOT_FOUND);
+            }
+            return new ResponseEntity<>(update, HttpStatus.OK);
+        }
+        return new ResponseEntity<>(null, HttpStatus.FORBIDDEN);
+    }
+
+    @DeleteMapping("/{userId}")
+    public ResponseEntity<Object> deleteUser(@PathVariable Integer userId, @RequestHeader(name = "Authorization") String authHeader){
+        if (jwtAuthenticator.validateJwtToken(authHeader)) {
+            if(userService.deleteUser(userId)){
+                return new ResponseEntity<>("Deleted", HttpStatus.OK);
+            }
+            return new ResponseEntity<>("No data found !", HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(null, HttpStatus.FORBIDDEN);
     }
 }
