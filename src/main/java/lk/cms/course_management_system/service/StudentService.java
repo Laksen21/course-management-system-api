@@ -86,19 +86,32 @@ public class StudentService {
 
     public StudentDto updateStudentWithCourse(Integer studentId, StudentDto studentDto) {
 
-        ArrayList<Course> courses = new ArrayList<>();
-        for (CourseDto courseDto : studentDto.getCourses()) {
-            courses.add(new Course(courseDto.getCode(),courseDto.getTitle(),courseDto.getDescription()));
-        }
+        Optional<Student> existingStudent = studentRepository.findById(studentId);
+        if (existingStudent.isPresent()) {
+            Student Student = existingStudent.get();
 
-        String encodedPassword = passwordEncoder.encode(studentDto.getAppPassword());
+            ArrayList<Course> courses = new ArrayList<>();
+            for (CourseDto courseDto : studentDto.getCourses()) {
+                courses.add(new Course(courseDto.getId(), courseDto.getCode(), courseDto.getTitle(), courseDto.getDescription()));
+            }
+            // Check password hashed
+            String encodedPassword;
+            if (isPasswordHashed(studentDto.getAppPassword()) && studentDto.getAppPassword().equals(Student.getAppPassword())) {
+                encodedPassword = Student.getAppPassword();
+            } else {
+                encodedPassword = passwordEncoder.encode(studentDto.getAppPassword());
+            }
 
-        if (studentRepository.existsById(studentId)) {
-            Student update = studentRepository.save(new Student(studentId, studentDto.getName(), studentDto.getEmail(), studentDto.getTel_no(),studentDto.getAddress(),encodedPassword,courses));
+            Student update = studentRepository.save(new Student(studentId, studentDto.getName(), studentDto.getEmail(), studentDto.getTel_no(), studentDto.getAddress(), encodedPassword, courses));
 
             return getCourseDto(update);
         }
+
         return null;
+    }
+
+    private boolean isPasswordHashed(String password) {
+        return password.startsWith("$2a$") || password.startsWith("$2b$");
     }
 
     public boolean deleteStudent(Integer studentId) {
@@ -130,7 +143,7 @@ public class StudentService {
 
         ArrayList<CourseDto> courseDtos = new ArrayList<>();
         for (Course course : student.getCourses()) {
-            courseDtos.add(new CourseDto(course.getCode(),course.getTitle(),course.getDescription()));
+            courseDtos.add(new CourseDto(course.getId(),course.getCode(),course.getTitle(),course.getDescription()));
         }
 
         return new StudentDto(student.getId(), student.getName(), student.getEmail(), student.getTel_no(),student.getAddress(),student.getAppPassword(),courseDtos);

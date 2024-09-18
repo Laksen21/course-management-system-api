@@ -6,6 +6,7 @@ import lk.cms.course_management_system.entity.Course;
 import lk.cms.course_management_system.entity.Student;
 import lk.cms.course_management_system.entity.Video;
 import lk.cms.course_management_system.repository.CourseRepository;
+import lk.cms.course_management_system.repository.StudentRepository;
 import lk.cms.course_management_system.repository.VideoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -22,6 +23,8 @@ public class CourseService {
 
     @Autowired
     private VideoRepository videoRepository;
+    @Autowired
+    private StudentRepository studentRepository;
 
     public CourseDto saveCourse(CourseDto courseDto) {
         Course save = courseRepository.save(new Course(courseDto.getCode(),courseDto.getTitle(), courseDto.getDescription()));
@@ -60,6 +63,24 @@ public class CourseService {
 //
 //    }
 
+    public CourseDto updateCourse(Integer courseId, CourseDto courseDto) {
+
+        Optional<Course> existCourse = courseRepository.findById(courseId);
+        if (existCourse.isPresent()) {
+            Course course = existCourse.get();
+
+            course.setCode(courseDto.getCode());
+            course.setTitle(courseDto.getTitle());
+            course.setDescription(courseDto.getDescription());
+
+            Course update = courseRepository.save(course);
+
+            return new CourseDto(update.getId(), update.getCode(), update.getTitle(), update.getDescription());
+        }
+        return null;
+    }
+
+
     public CourseDto updateCourseWithVideos(CourseDto courseDto, Integer courseId) {
 
         ArrayList<Video> videos = new ArrayList<>();
@@ -77,7 +98,13 @@ public class CourseService {
 
 
     public boolean deleteCourse(Integer courseId) {
-        if(courseRepository.existsById(courseId)){
+        Optional<Course> existCourse = courseRepository.findById(courseId);
+        if(existCourse.isPresent()){
+            Course course = existCourse.get();
+            for (Student student : course.getStudents()) {
+                student.getCourses().remove(course);
+                studentRepository.save(student);
+            }
             courseRepository.deleteById(courseId);
             return true;
         }
@@ -97,4 +124,5 @@ public class CourseService {
 
         return new CourseDto(course.getId(), course.getCode(), course.getTitle(), course.getDescription(),videoDtos);
     }
+
 }

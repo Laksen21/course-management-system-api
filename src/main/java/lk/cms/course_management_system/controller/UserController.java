@@ -29,7 +29,7 @@ public class UserController {
         return new ResponseEntity<>(login, HttpStatus.OK);
     }
 
-    @PostMapping("/add-user")
+    @PostMapping("/add_user")
     public ResponseEntity<RegisterResponseDto> addUser(@RequestBody UserDto userDto, @RequestHeader(name = "Authorization") String authHeader) {
         if (jwtAuthenticator.validateJwtToken(authHeader)) {
             RegisterResponseDto register = userService.addUser(userDto);

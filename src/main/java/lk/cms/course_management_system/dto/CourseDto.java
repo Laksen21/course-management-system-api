@@ -19,12 +19,6 @@ public class CourseDto {
     private List<StudentDto> students;
     private List<VideoDto> videos;
 
-    public CourseDto(String code, String title, String description) {
-        this.code = code;
-        this.title = title;
-        this.description = description;
-    }
-
     public CourseDto(Integer id, String code, String title, String description) {
         this.id = id;
         this.code = code;

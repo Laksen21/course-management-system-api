@@ -43,6 +43,13 @@ public class Course {
         this.videos = videos;
     }
 
+    public Course(Integer id, String code, String title, String description) {
+        this.id = id;
+        this.code = code;
+        this.title = title;
+        this.description = description;
+    }
+
     public Course(Integer id, String code, String title, String description, List<Video> videos) {
         this.id = id;
         this.code = code;

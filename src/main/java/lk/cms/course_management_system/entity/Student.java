@@ -43,4 +43,5 @@ public class Student {
         this.appPassword = appPassword;
         this.courses = courses;
     }
+
 }

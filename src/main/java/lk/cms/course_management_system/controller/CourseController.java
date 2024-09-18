@@ -38,11 +38,20 @@ public class CourseController {
 //
 //    }
 
+    @PutMapping("/{courseId}")
+    public ResponseEntity<Object> updateCourse(@PathVariable Integer courseId, @RequestBody CourseDto courseDto){
+        CourseDto update = courseService.updateCourse(courseId,courseDto);
+        if(update == null){
+            return new ResponseEntity<>("No course found", HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(update, HttpStatus.OK);
+    }
+
     @PutMapping("/course_with_video/{courseId}")
     public ResponseEntity<Object> updateStudentWithCourse(@PathVariable Integer courseId, @RequestBody CourseDto courseDto){
         CourseDto update = courseService.updateCourseWithVideos(courseDto,courseId);
         if(update == null){
-            return new ResponseEntity<>("No student found", HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>("No course found", HttpStatus.NOT_FOUND);
         }
         return new ResponseEntity<>(update, HttpStatus.OK);
     }
