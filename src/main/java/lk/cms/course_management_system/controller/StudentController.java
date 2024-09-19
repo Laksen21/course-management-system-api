@@ -76,15 +76,12 @@ public class StudentController {
 
     //student app login
     @PostMapping("/login")
-    public ResponseEntity<LoginResponseDto> StudentLogin(@RequestBody StudentDto studentDto, @RequestHeader(name = "Authorization") String authHeader) {
-        if (jwtAuthenticator.validateJwtToken(authHeader)) {
-            LoginResponseDto login = studentService.studentLogin(studentDto);
-            if (login.getToken() == null) {
-                return new ResponseEntity<>(login, HttpStatus.UNAUTHORIZED);
-            }
-            return new ResponseEntity<>(login, HttpStatus.OK);
+    public ResponseEntity<LoginResponseDto> StudentLogin(@RequestBody StudentDto studentDto) {
+        LoginResponseDto login = studentService.studentLogin(studentDto);
+        if (login.getToken() == null) {
+            return new ResponseEntity<>(login, HttpStatus.UNAUTHORIZED);
         }
-        return new ResponseEntity<>(null, HttpStatus.FORBIDDEN);
+        return new ResponseEntity<>(login, HttpStatus.OK);
     }
 
 }

@@ -13,5 +13,12 @@ public class VideoDto {
     private String name;
     private String videoFilePath;
     private String thumbnailFilePath;
+    private CourseDto course;
 
+    public VideoDto(Integer id, String name, String videoFilePath, String thumbnailFilePath) {
+        this.id = id;
+        this.name = name;
+        this.videoFilePath = videoFilePath;
+        this.thumbnailFilePath = thumbnailFilePath;
+    }
 }
