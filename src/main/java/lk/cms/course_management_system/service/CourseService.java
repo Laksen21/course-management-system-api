@@ -125,4 +125,11 @@ public class CourseService {
         return new CourseDto(course.getId(), course.getCode(), course.getTitle(), course.getDescription(),videoDtos);
     }
 
+    public CourseDto getCourseById(Integer courseId) {
+        if (courseRepository.existsById(courseId)) {
+            Course course = courseRepository.findById(courseId).get();
+            return getVideoDto(course);
+        }
+       return null;
+    }
 }

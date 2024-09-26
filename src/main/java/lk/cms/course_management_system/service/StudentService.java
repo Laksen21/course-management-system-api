@@ -78,7 +78,6 @@ public class StudentService {
 
         if (studentRepository.existsById(id)) {
             Student student = studentRepository.findById(id).get();
-
             return getCourseDto(student);
         }
         return null;
@@ -134,9 +133,9 @@ public class StudentService {
         Student studentByEmail = studentRepository.findStudentByEmail(studentDto.getEmail());
         if (passwordEncoder.matches(studentDto.getAppPassword(), studentByEmail.getAppPassword())) {
             String jwtToken = jwtAuthenticator.generateJwtToken(studentByEmail);
-            return new LoginResponseDto(studentByEmail.getEmail(), "Login Success !", jwtToken);
+            return new LoginResponseDto(studentByEmail.getId(), studentByEmail.getEmail(), "Login Success !", jwtToken);
         }
-        return new LoginResponseDto(studentByEmail.getEmail(), "Login Failed !", null);
+        return new LoginResponseDto(studentByEmail.getId(),studentByEmail.getEmail(), "Login Failed !", null);
     }
 
     private StudentDto getCourseDto(Student student) {

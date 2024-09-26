@@ -37,12 +37,9 @@ public class Video {
         this.thumbnailFilePath = thumbnailFilePath;
     }
 
-    public Video(Course course, String name, String videoFilePath, String thumbnailFilePath) {
+    public Video(Course course, String name) {
         this.course = course;
         this.name = name;
-        this.videoFilePath = videoFilePath;
-        this.thumbnailFilePath = thumbnailFilePath;
     }
-
 
 }

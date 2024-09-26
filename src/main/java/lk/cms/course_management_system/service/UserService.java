@@ -30,9 +30,9 @@ public class UserService {
         User userByUsername = userRepository.getUserByUsername(userDto.getUsername());
         if (passwordEncoder.matches(userDto.getPassword(), userByUsername.getPassword())) {
             String jwtToken = jwtAuthenticator.generateJwtToken(userByUsername);
-            return new LoginResponseDto(userByUsername.getUsername(), "Login Success !", jwtToken);
+            return new LoginResponseDto(userByUsername.getId(),userByUsername.getUsername(), "Login Success !", jwtToken);
         }
-        return new LoginResponseDto(userByUsername.getUsername(), "Login Failed !", null);
+        return new LoginResponseDto(userByUsername.getId(),userByUsername.getUsername(), "Login Failed !", null);
     }
 
     public UserDto updateUser(Integer userId, UserDto userDto) {

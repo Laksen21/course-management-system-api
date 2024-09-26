@@ -47,10 +47,14 @@ public class CourseController {
         return new ResponseEntity<>(null, HttpStatus.FORBIDDEN);
     }
 
-//    @GetMapping("/{CourseCode}")
-//    public ResponseEntity<Object> getCourseById(@PathVariable String CourseCode) {
-//
-//    }
+    @GetMapping("/{CourseId}/videos")
+    public ResponseEntity<Object> getCourseById(@PathVariable Integer CourseId, @RequestHeader(name = "Authorization") String authHeader) {
+        if (jwtAuthenticator.validateJwtToken(authHeader)) {
+            CourseDto courseDto = courseService.getCourseById(CourseId);
+            return new ResponseEntity<>(courseDto, HttpStatus.OK);
+        }
+        return new ResponseEntity<>(null, HttpStatus.FORBIDDEN);
+    }
 
     @PutMapping("/{courseId}")
     public ResponseEntity<Object> updateCourse(@PathVariable Integer courseId, @RequestBody CourseDto courseDto, @RequestHeader(name = "Authorization") String authHeader){
