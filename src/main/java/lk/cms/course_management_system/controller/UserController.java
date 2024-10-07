@@ -1,6 +1,7 @@
 package lk.cms.course_management_system.controller;
 
 import lk.cms.course_management_system.dto.LoginResponseDto;
+import lk.cms.course_management_system.dto.PasswordResetDto;
 import lk.cms.course_management_system.dto.RegisterResponseDto;
 import lk.cms.course_management_system.dto.UserDto;
 import lk.cms.course_management_system.service.UserService;
@@ -9,6 +10,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.NoSuchElementException;
 
 @RestController
 @RequestMapping("/user")
@@ -29,11 +33,20 @@ public class UserController {
         return new ResponseEntity<>(login, HttpStatus.OK);
     }
 
-    @PostMapping("/add_user")
+    @PostMapping("/add")
     public ResponseEntity<RegisterResponseDto> addUser(@RequestBody UserDto userDto, @RequestHeader(name = "Authorization") String authHeader) {
         if (jwtAuthenticator.validateJwtToken(authHeader)) {
             RegisterResponseDto register = userService.addUser(userDto);
             return new ResponseEntity<>(register, HttpStatus.CREATED);
+        }
+        return new ResponseEntity<>(null, HttpStatus.FORBIDDEN);
+    }
+
+    @GetMapping
+    public ResponseEntity<Object> getAllUsers(@RequestHeader(name = "Authorization") String authHeader) {
+        if (jwtAuthenticator.validateJwtToken(authHeader)) {
+            List<UserDto> allUsers = userService.getAllUsers();
+            return new ResponseEntity<>(allUsers, HttpStatus.OK);
         }
         return new ResponseEntity<>(null, HttpStatus.FORBIDDEN);
     }
@@ -57,6 +70,21 @@ public class UserController {
                 return new ResponseEntity<>("Deleted", HttpStatus.OK);
             }
             return new ResponseEntity<>("No data found !", HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(null, HttpStatus.FORBIDDEN);
+    }
+
+    @PutMapping("change_password/{userId}")
+    public ResponseEntity<Object> updatePassword(@PathVariable Integer userId, @RequestBody PasswordResetDto passwordResetDto, @RequestHeader(name = "Authorization") String authHeader){
+        if (jwtAuthenticator.validateJwtToken(authHeader)) {
+            try {
+                UserDto updatePassword = userService.updatePassword(userId, passwordResetDto);
+                return new ResponseEntity<>(updatePassword, HttpStatus.OK);
+            } catch (NoSuchElementException e) {
+                return new ResponseEntity<>("No user found", HttpStatus.NOT_FOUND);
+            } catch (IllegalArgumentException e) {
+                return new ResponseEntity<>("Current password is incorrect", HttpStatus.BAD_REQUEST);
+            }
         }
         return new ResponseEntity<>(null, HttpStatus.FORBIDDEN);
     }
