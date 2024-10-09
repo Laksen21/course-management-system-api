@@ -1,9 +1,6 @@
 package lk.cms.course_management_system.controller;
 
-import lk.cms.course_management_system.dto.LoginResponseDto;
-import lk.cms.course_management_system.dto.PasswordResetDto;
-import lk.cms.course_management_system.dto.RegisterResponseDto;
-import lk.cms.course_management_system.dto.UserDto;
+import lk.cms.course_management_system.dto.*;
 import lk.cms.course_management_system.service.UserService;
 import lk.cms.course_management_system.util.JwtAuthenticator;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -78,7 +75,7 @@ public class UserController {
     public ResponseEntity<Object> updatePassword(@PathVariable Integer userId, @RequestBody PasswordResetDto passwordResetDto, @RequestHeader(name = "Authorization") String authHeader){
         if (jwtAuthenticator.validateJwtToken(authHeader)) {
             try {
-                UserDto updatePassword = userService.updatePassword(userId, passwordResetDto);
+                PasswordChangeDto updatePassword = userService.updatePassword(userId, passwordResetDto);
                 return new ResponseEntity<>(updatePassword, HttpStatus.OK);
             } catch (NoSuchElementException e) {
                 return new ResponseEntity<>("No user found", HttpStatus.NOT_FOUND);

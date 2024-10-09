@@ -1,10 +1,9 @@
 package lk.cms.course_management_system.service;
 
-import lk.cms.course_management_system.dto.CourseDto;
-import lk.cms.course_management_system.dto.LoginResponseDto;
-import lk.cms.course_management_system.dto.StudentDto;
+import lk.cms.course_management_system.dto.*;
 import lk.cms.course_management_system.entity.Course;
 import lk.cms.course_management_system.entity.Student;
+import lk.cms.course_management_system.entity.User;
 import lk.cms.course_management_system.repository.CourseRepository;
 import lk.cms.course_management_system.repository.StudentRepository;
 import lk.cms.course_management_system.util.JwtAuthenticator;
@@ -14,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @Service
@@ -131,11 +131,14 @@ public class StudentService {
     public LoginResponseDto studentLogin(StudentDto studentDto) {
 
         Student studentByEmail = studentRepository.findStudentByEmail(studentDto.getEmail());
-        if (passwordEncoder.matches(studentDto.getAppPassword(), studentByEmail.getAppPassword())) {
-            String jwtToken = jwtAuthenticator.generateJwtToken(studentByEmail);
-            return new LoginResponseDto(studentByEmail.getId(), studentByEmail.getEmail(), "Login Success !", jwtToken);
+        if (studentByEmail != null) {
+            if (passwordEncoder.matches(studentDto.getAppPassword(), studentByEmail.getAppPassword())) {
+                String jwtToken = jwtAuthenticator.generateJwtToken(studentByEmail);
+                return new LoginResponseDto(studentByEmail.getId(), studentByEmail.getEmail(), "Login Success !", jwtToken);
+            }
+            throw new IllegalArgumentException("Incorrect password");
         }
-        return new LoginResponseDto(studentByEmail.getId(),studentByEmail.getEmail(), "Login Failed !", null);
+        throw new NoSuchElementException("User not found");
     }
 
     private StudentDto getCourseDto(Student student) {
@@ -148,4 +151,18 @@ public class StudentService {
         return new StudentDto(student.getId(), student.getName(), student.getEmail(), student.getTel_no(),student.getAddress(),student.getAppPassword(),courseDtos);
     }
 
+    public PasswordChangeDto changePassword(Integer studentId, PasswordResetDto passwordResetDto) {
+        Optional<Student> existUser = studentRepository.findById(studentId);
+        if (existUser.isPresent()) {
+            Student student = existUser.get();
+            if (passwordEncoder.matches(passwordResetDto.getCurrentPassword(), student.getAppPassword())) {
+                String encodedNewPassword = passwordEncoder.encode(passwordResetDto.getNewPassword());
+                student.setAppPassword(encodedNewPassword);
+                studentRepository.save(student);
+                return new PasswordChangeDto(student.getId(), student.getName(), "Password successfully changed !");
+            }
+            throw new IllegalArgumentException("Current password is incorrect");
+        }
+        throw new NoSuchElementException("User not found");
+    }
 }

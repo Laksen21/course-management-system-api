@@ -1,7 +1,6 @@
 package lk.cms.course_management_system.controller;
 
-import lk.cms.course_management_system.dto.LoginResponseDto;
-import lk.cms.course_management_system.dto.StudentDto;
+import lk.cms.course_management_system.dto.*;
 import lk.cms.course_management_system.service.StudentService;
 import lk.cms.course_management_system.util.JwtAuthenticator;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @RestController
 @RequestMapping("/student")
@@ -76,12 +76,33 @@ public class StudentController {
 
     //student app login
     @PostMapping("/login")
-    public ResponseEntity<LoginResponseDto> StudentLogin(@RequestBody StudentDto studentDto) {
-        LoginResponseDto login = studentService.studentLogin(studentDto);
-        if (login.getToken() == null) {
-            return new ResponseEntity<>(login, HttpStatus.UNAUTHORIZED);
+    public ResponseEntity<Object> StudentLogin(@RequestBody StudentDto studentDto) {
+        try {
+            LoginResponseDto login = studentService.studentLogin(studentDto);
+            if (login.getToken() == null) {
+                return new ResponseEntity<>(login, HttpStatus.UNAUTHORIZED);
+            }
+            return new ResponseEntity<>(login, HttpStatus.OK);
+        } catch (NoSuchElementException e) {
+            return new ResponseEntity<>("No user found", HttpStatus.NOT_FOUND);
+        } catch (IllegalArgumentException e) {
+            return new ResponseEntity<>("Incorrect password", HttpStatus.BAD_REQUEST);
         }
-        return new ResponseEntity<>(login, HttpStatus.OK);
+    }
+
+    @PutMapping("/change_password/{studentId}")
+    public ResponseEntity<Object> changePassword(@PathVariable Integer studentId, @RequestBody PasswordResetDto passwordResetDto, @RequestHeader(name = "Authorization") String authHeader) {
+        if (jwtAuthenticator.validateJwtToken(authHeader)) {
+            try {
+                PasswordChangeDto updatePassword = studentService.changePassword(studentId, passwordResetDto);
+                return new ResponseEntity<>(updatePassword, HttpStatus.OK);
+            } catch (NoSuchElementException e) {
+                return new ResponseEntity<>("No user found", HttpStatus.NOT_FOUND);
+            } catch (IllegalArgumentException e) {
+                return new ResponseEntity<>("Current password is incorrect", HttpStatus.BAD_REQUEST);
+            }
+        }
+        return new ResponseEntity<>(null, HttpStatus.FORBIDDEN);
     }
 
 }

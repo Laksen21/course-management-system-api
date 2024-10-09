@@ -1,9 +1,6 @@
 package lk.cms.course_management_system.service;
 
-import lk.cms.course_management_system.dto.LoginResponseDto;
-import lk.cms.course_management_system.dto.PasswordResetDto;
-import lk.cms.course_management_system.dto.RegisterResponseDto;
-import lk.cms.course_management_system.dto.UserDto;
+import lk.cms.course_management_system.dto.*;
 import lk.cms.course_management_system.entity.User;
 import lk.cms.course_management_system.repository.UserRepository;
 import lk.cms.course_management_system.util.JwtAuthenticator;
@@ -69,14 +66,14 @@ public class UserService {
         return false;
     }
 
-    public UserDto updatePassword(Integer userId, PasswordResetDto passwordResetDto) {
+    public PasswordChangeDto updatePassword(Integer userId, PasswordResetDto passwordResetDto) {
         Optional<User> existUser = userRepository.findById(userId);
         if (existUser.isPresent()) {
             User user = existUser.get();
             if (passwordEncoder.matches(passwordResetDto.getCurrentPassword(), user.getPassword())) {
                 String encodedNewPassword = passwordEncoder.encode(passwordResetDto.getNewPassword());
                 User updatePassword = userRepository.save(new User(userId, user.getUsername(), encodedNewPassword));
-                return new UserDto(updatePassword.getId(), updatePassword.getUsername());
+                return new PasswordChangeDto(updatePassword.getId(), updatePassword.getUsername(), "Password successfully changed !");
             }
             throw new IllegalArgumentException("Current password is incorrect");
         }

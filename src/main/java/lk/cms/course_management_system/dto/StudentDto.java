@@ -19,5 +19,8 @@ public class StudentDto {
     private String appPassword;
     private List<CourseDto> courses;
 
-
+    public StudentDto(Integer id, String name) {
+        this.id = id;
+        this.name = name;
+    }
 }
