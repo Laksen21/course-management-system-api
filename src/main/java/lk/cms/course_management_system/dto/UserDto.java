@@ -13,4 +13,8 @@ public class UserDto {
     private String username;
     private String password;
 
+    public UserDto(Integer id, String username) {
+        this.id = id;
+        this.username = username;
+    }
 }

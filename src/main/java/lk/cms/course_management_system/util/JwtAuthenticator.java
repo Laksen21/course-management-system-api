@@ -1,5 +1,6 @@
 package lk.cms.course_management_system.util;
 
+import lk.cms.course_management_system.entity.Student;
 import lk.cms.course_management_system.entity.User;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -15,12 +16,24 @@ import java.util.Date;
 public class JwtAuthenticator {
 
     // generate JWT token
-    public String generateJwtToken(User user) {
+    public String generateJwtToken(Object entity) {
         int jwtExpirationMs = 36000000;
+        String subject;
+
+        if (entity instanceof User) {
+            subject = ((User) entity).getUsername();
+        } else if (entity instanceof Student) {
+            subject = ((Student) entity).getEmail();
+        } else {
+            throw new IllegalArgumentException("Unsupported entity type");
+        }
+
+        Date now = new Date();  // Get current time once
+
         return Jwts.builder()
-                .subject((user.getUsername()))
-                .issuedAt(new Date())
-                .expiration(new Date((new Date()).getTime() + jwtExpirationMs))
+                .subject(subject)
+                .issuedAt(now)
+                .expiration(new Date(now.getTime() + jwtExpirationMs))
                 .signWith(key(), SignatureAlgorithm.HS256)
                 .compact();
     }
